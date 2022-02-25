@@ -39,6 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'userApp'
+    'blogApp'
+    'bbsApp'
+    'staticApp'
 ]
 
 MIDDLEWARE = [
@@ -120,3 +123,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

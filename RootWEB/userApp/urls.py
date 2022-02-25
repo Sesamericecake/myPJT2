@@ -1,4 +1,3 @@
-from django.contrib import admin
 from django.contrib import path, include
 from userApp import views
 
@@ -10,6 +9,6 @@ urlpatterns = [
     path('detail/', views.detail)
     path('registerForm/', views.regsterForm)
     path('join/',views.join)
-
+    path('logout/',     views.logout)
 ]
 

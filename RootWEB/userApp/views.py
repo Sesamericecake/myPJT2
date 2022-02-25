@@ -3,12 +3,21 @@ from .models            import *
 # Create your views here.
 def index(request) :
     print(">>>>> user index")
-    return render(request, 'user/index.html')
+    if request.session.get('user_name'):
+        print('>>>> login session exist!')
+        context = {
+            'session_user_name' :   request.session.get('user_name'),
+            'session_user_id': request.session['user_id'],
+        } #
+        return render(request, 'user/ok.html')
+    else:
+        return render(request, 'user/index.html')
 
 # select * from WebUser where user_id = x and user_pwd = x
 #  orm : modelName.objects.get()
 # select * from WebUser
-# orm : model
+# orm : modelName.object.all()
+# session tracking m
 def login(request) :
     print('>>>>> user login')
     if request.method == 'POST':
@@ -17,17 +26,28 @@ def login(request) :
         pwd = request.POST['pwd']
         # model = DB(Select)
         # 정보를 담는 작업을 필요로 한다.
-        user = WebUser.objects.get(user_id = id, user_pwd = pwd) #where 절
-        print('model value -', user.user_name)
-        context = {'loginUser': user}
-        return render(request, 'user/ok.html', context)
-    else :
-        print('>>>> request get')
+        context = {}
+        try :
+            user = WebUser.objects.get(user_id = id, user_pwd = pwd) #where 절
+        #if user is not None:
+           # 세션을 만드는 과정
+           request.session['user_name'] = user.user_name
+           request.session['user_id'] = user.user_id
+           #세션을 심는 과정
+           context['session_user_name'] = request.session['user_name']
+           context['session_user_id'] = request.session['user_id']
+           return render(request, 'user/ok.html', context)
+        except Exception as e:
+            context['error'] = 'invalid id, pwd'
+       # print('model value -', user.user_name)
+       # context = {'loginUser': user}
+            return render(request, 'user/ok.html', context)
+        #print('>>>> request get')
         # request.GET['id']
 
 def list(request) :
     print('>>>>user list')
-    division = request.GET['category']
+    division = request.GET['category']  # key =category
     print('param -' , division)
     #model - select * from table where cat = sport
     users = WebUser.object.all()
@@ -65,3 +85,14 @@ def join(request):
     WebUser(user_id = id, user_pwd = pwd, user_name = name).save()
     #return render(request, 'user/index.html')
     return redirect('index')
+
+def logout(request):
+    print(">>>> user logout")
+    # 세션을 삭제
+    request.session.get('user_name') = {}
+    request.session['user_id'] = {}
+    request.session.modified = True
+
+    # 새로운 request url을 정의할때
+
+    return redirect()
